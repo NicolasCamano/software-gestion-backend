@@ -80,30 +80,4 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
-    # gestion/views.py
-
-# ... (todo tu código anterior de ViewSets se queda como está) ...
-
-
-# --- CÓDIGO TEMPORAL PARA CREAR UN SUPERUSUARIO ---
-from django.contrib.auth import get_user_model
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
-
-@api_view(['GET'])
-@permission_classes([AllowAny]) # Permite que cualquiera visite esta URL sin login
-def crear_superusuario_temporal(request):
-    User = get_user_model()
-    USERNAME = 'adminprod' # Elige un nombre de usuario
-    PASSWORD = 'PasswordSeguroParaProd123!' # Elige una contraseña segura
-    EMAIL = 'admin@example.com'
-
-    if User.objects.filter(username=USERNAME).exists():
-        return Response({"status": "error", "message": f"El usuario '{USERNAME}' ya existe."})
-
-    try:
-        User.objects.create_superuser(username=USERNAME, email=EMAIL, password=PASSWORD)
-        return Response({"status": "éxito", "message": f"Superusuario '{USERNAME}' creado. ¡Ahora borra este código!"})
-    except Exception as e:
-        return Response({"status": "error", "message": str(e)})
+    

@@ -8,7 +8,7 @@ from .views import (
     RecaudacionViewSet, 
     RegistroInventarioViewSet, 
     MantenimientoViewSet,
-    crear_superusuario_temporal 
+    
 )
 
 # Este router crea las rutas para todos nuestros modelos de la app 'gestion'
@@ -23,12 +23,6 @@ router.register(r'mantenimientos', MantenimientoViewSet, basename='mantenimiento
 # Exportamos las URLs que el router ha generado
 urlpatterns = [
     path('', include(router.urls)),
-]
-
-urlpatterns = [
-    path('', include(router.urls)),
-    # 2. Añade esta nueva línea para la URL secreta
-    path('crear-superusuario-secreto-ahora/', crear_superusuario_temporal, name='crear_superusuario_temporal'),
 ]
 
 
