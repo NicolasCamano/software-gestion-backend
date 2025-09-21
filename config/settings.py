@@ -1,26 +1,34 @@
+# config/settings.py
+
 import os
 from pathlib import Path
 import dj_database_url
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# La SECRET_KEY ahora se leerá de una "variable de entorno" en el servidor.
-# Si no la encuentra, usa una clave simple (solo para desarrollo local).
+
+# --- CONFIGURACIONES DE SEGURIDAD PARA PRODUCCIÓN ---
+
+# La SECRET_KEY se leerá de una variable de entorno en Render.
+# Si no la encuentra, usa una clave simple (SOLO para desarrollo local).
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-fallback-key-for-development')
 
-# El modo DEBUG será 'False' en producción y 'True' en tu PC.
+# El modo DEBUG será 'False' en producción para mayor seguridad.
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-# ALLOWED_HOSTS le dice a Django qué dominios pueden acceder a él.
+# ALLOWED_HOSTS le dice a Django qué dominios pueden servir la aplicación.
 ALLOWED_HOSTS = []
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-# Esta línea permite que localhost también funcione en desarrollo
-if not RENDER_EXTERNAL_HOSTNAME:
+# Esta línea permite que 'localhost' (127.0.0.1) funcione en desarrollo.
+if not DEBUG:
     ALLOWED_HOSTS.append('127.0.0.1')
 
+
+# --- APLICACIONES INSTALADAS ---
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -28,26 +36,56 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'whitenoise.runserver_nostatic', # Whitenoise
+    'whitenoise.runserver_nostatic', # Necesario para Whitenoise
     'django.contrib.staticfiles',
+
+    # Apps de Terceros
     'rest_framework',
     'rest_framework_simplejwt',
     'django_filters',
     'corsheaders',
+
+    # Nuestras Apps
     'gestion',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # Whitenoise
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Middleware de Whitenoise
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware', # Middleware de CORS
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+ROOT_URLCONF = 'config.urls'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = 'config.wsgi.application'
+
+
+# --- CONFIGURACIÓN DE LA BASE DE DATOS ---
+
+# En producción, usará la URL de la base de datos de Render.
+# En desarrollo, creará un archivo db.sqlite3 local.
 DATABASES = {
     'default': dj_database_url.config(
         default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
@@ -55,59 +93,48 @@ DATABASES = {
     )
 }
 
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+
+# --- VALIDACIÓN DE CONTRASEÑAS ---
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
+# --- INTERNACIONALIZACIÓN ---
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+LANGUAGE_CODE = 'es-ar' # Español de Argentina
+TIME_ZONE = 'America/Argentina/Buenos_Aires'
 USE_I18N = True
-
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
+# --- ARCHIVOS ESTÁTICOS (PARA EL ADMIN DE DJANGO) ---
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+# En producción (cuando DEBUG es False), los archivos estáticos se guardarán en esta carpeta.
+if not DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+
+# --- CONFIGURACIÓN POR DEFECTO ---
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-
-# --- CONFIGURACIÓN DE CORS ---
-# Le decimos a Django qué orígenes (direcciones) tienen permiso para hacer peticiones.
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000', # La dirección de nuestra app de React
-]
-
-# Al final de config/settings.py
+# --- CONFIGURACIONES DE DJANGO REST FRAMEWORK Y CORS ---
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
+
+# Aquí añadiremos la URL de nuestro front-end una vez que esté desplegado.
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+]
