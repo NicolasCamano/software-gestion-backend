@@ -85,6 +85,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # --- CONFIGURACIÓN DE LA BASE DE DATOS ---
 
 # En producción, usará la URL de la base de datos de Render.
+
+
 # En desarrollo, creará un archivo db.sqlite3 local.
 DATABASES = {
     'default': dj_database_url.config(
