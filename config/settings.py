@@ -153,6 +153,14 @@ CORS_TRUSTED_ORIGINS = [
     # Añadimos la URL de Vercel aquí también
     'https://software-gestion-frontend.vercel.app',
 ]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'authorization',
+    'content-type',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # Si estás usando el plan gratuito de Render y el nombre de tu servicio cambia,
 # puedes usar una variable de entorno para la URL del frontend.
