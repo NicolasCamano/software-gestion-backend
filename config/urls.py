@@ -3,17 +3,22 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView
-# Importamos NUESTRA vista personalizada para obtener el token
 from gestion.views import MyTokenObtainPairView
 
+# --- NUEVA ESTRUCTURA DE URLS PARA LA API ---
+# Creamos una lista separada para todas las rutas de la API.
+api_urlpatterns = [
+    # Esta línea incluye todas las URLs de 'gestion' (maquinas, salas, etc.)
+    path('', include('gestion.urls')),
+    
+    # Añadimos las rutas de los tokens DENTRO de la API.
+    path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+]
+
 urlpatterns = [
-    # 1. La ruta del Panel de Administración
     path('admin/', admin.site.urls),
     
-    # 2. La ruta principal a nuestra API, que redirige al "mapa del barrio" (gestion.urls)
-    path('api/v1/', include('gestion.urls')),
-
-    # 3. Las rutas para la autenticación (la oficina de pasaportes)
-    path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    # La ruta principal '/api/v1/' ahora incluye TODAS las rutas de la API.
+    path('api/v1/', include(api_urlpatterns)),
 ]
