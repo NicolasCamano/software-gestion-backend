@@ -5,13 +5,14 @@ from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView
 from gestion.views import MyTokenObtainPairView
 
-# --- NUEVA ESTRUCTURA DE URLS PARA LA API ---
-# Creamos una lista separada para todas las rutas de la API.
+# --- ESTRUCTURA DE URLS UNIFICADA ---
+# Creamos una lista para TODAS las rutas de la API.
 api_urlpatterns = [
     # Esta línea incluye todas las URLs de 'gestion' (maquinas, salas, etc.)
     path('', include('gestion.urls')),
     
-    # Añadimos las rutas de los tokens DENTRO de la API.
+    # --- LA CORRECCIÓN ESTÁ AQUÍ ---
+    # Añadimos la ruta de 'refresh' dentro de la API, donde pertenece.
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
