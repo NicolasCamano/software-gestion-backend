@@ -136,7 +136,27 @@ REST_FRAMEWORK = {
     ),
 }
 
-# Aquí añadiremos la URL de nuestro front-end una vez que esté desplegado.
+# --- ¡LA CORRECCIÓN FINAL DE CORS ESTÁ AQUÍ! ---
+
+# Primero, definimos la lista de orígenes permitidos que ya teníamos
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
+    # Asegúrate de que tu URL de Vercel esté aquí y bien escrita
+    'https://software-gestion-frontend.vercel.app', 
 ]
+
+# Como método extra de seguridad y para entornos como Render,
+# podemos usar CORS_TRUSTED_ORIGINS. Esto es especialmente útil
+# para asegurar que las peticiones 'preflight' funcionen correctamente.
+CORS_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+    # Añadimos la URL de Vercel aquí también
+    'https://software-gestion-frontend.vercel.app',
+]
+
+# Si estás usando el plan gratuito de Render y el nombre de tu servicio cambia,
+# puedes usar una variable de entorno para la URL del frontend.
+# RENDER_FRONTEND_URL = os.environ.get('RENDER_FRONTEND_URL')
+# if RENDER_FRONTEND_URL:
+#     CORS_ALLOWED_ORIGINS.append(RENDER_FRONTEND_URL)
+#     CORS_TRUSTED_ORIGINS.append(RENDER_FRONTEND_URL)
