@@ -37,7 +37,7 @@ class MaquinaViewSet(viewsets.ModelViewSet):
     def qr_code(self, request, pk=None):
         # ... (código del QR)
         maquina = self.get_object()
-         frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+        frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
         
         # Construimos la URL final usando la variable
         url_a_codificar = f"{frontend_url}/maquinas/{maquina.id}"
